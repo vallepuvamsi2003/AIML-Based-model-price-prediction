@@ -1,0 +1,170 @@
+/* Custom styles to mimic Tailwind's default font and add animations */
+body {
+    font-family: 'Inter', sans-serif;
+}
+
+/* Basic fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Slide-in animation for cards */
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.card-animate {
+    animation: slideInUp 0.6s ease-out forwards;
+}
+
+/* Spin animation for loader icon */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Pulse animation for background elements */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.2; }
+    50% { transform: scale(1.05); opacity: 0.3; }
+}
+.animate-pulse-bg {
+    animation: pulse 4s infinite ease-in-out;
+}
+
+/* Bounce animation for background elements */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+.animate-bounce-bg {
+    animation: bounce 3s infinite ease-in-out;
+}
+
+/* Button hover effect */
+.btn-hover-effect {
+    transition: all 0.3s ease;
+}
+.btn-hover-effect:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Input focus effect */
+.input-focus-effect:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3); /* green-500 with opacity */
+}
+
+/* Toast Container - Top Middle */
+#toast-container {
+    position: fixed;
+    top: 20px; /* Position 20px from the top */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust for the element's own width */
+    display: flex; /* Use flexbox to center content */
+    flex-direction: column; /* Stack messages vertically */
+    align-items: center; /* Center horizontally within the container */
+    /* Removed justify-content: center; as it's not needed for top positioning */
+    gap: 12px; /* Spacing between toasts */
+    z-index: 99999; /* Ensure it's on top of everything */
+    pointer-events: none; /* Allows clicks to pass through */
+    width: 100%; /* Take full width to allow horizontal centering */
+    max-width: 350px; /* Optional: Limit width for better appearance */
+}
+
+/* Update toast-enter/exit animations for top positioning */
+@keyframes toastEnter {
+    from { opacity: 0; transform: translateY(-20px); } /* Fade in from slightly above */
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes toastExit {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-20px); } /* Fade out upwards */
+}
+
+.toast-enter {
+    animation: toastEnter 0.5s ease-out forwards;
+}
+
+.toast-exit {
+    animation: toastExit 0.5s ease-in forwards;
+}
+
+/* Navigation Button Styling */
+.nav-btn {
+    font-weight: 600; /* font-semibold */
+    padding: 0.75rem 1.5rem; /* px-6 py-3 */
+    border-radius: 0.75rem; /* rounded-xl */
+    transition: all 0.3s ease-in-out;
+    border: 2px solid transparent; /* default transparent border */
+}
+
+.nav-btn:hover {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+    --tw-gradient-from: #d1fae5; /* green-100 */
+    --tw-gradient-to: #e0f2fe; /* blue-100 */
+    color: #065f46; /* green-800 */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+    transform: scale(1.05);
+}
+
+/* Active Nav Button */
+.nav-btn.active {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+    --tw-gradient-from: #10b981; /* green-500 */
+    --tw-gradient-to: #14b8a6; /* teal-500 */
+    color: #ffffff; /* text-white */
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-xl */
+    transform: scale(1.05);
+}
+
+#mic-btn:focus, #mic-btn:hover {
+  box-shadow: 0 4px 14px #10b98144;
+  background: #d1fae5;
+}
+
+#mic-btn.listening #mic-icon {
+  animation: pulse-mic 1s infinite alternate;
+}
+
+@keyframes pulse-mic {
+  0% { transform: scale(1); filter: brightness(1); }
+  100% { transform: scale(1.1); filter: brightness(1.3); }
+}
+
+header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 60px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0 20px;
+  background: #10B981; /* Your theme green */
+  z-index: 999;
+}
+
+#login-btn {
+  background: white;
+  color: #10B981;
+  border: none;
+  padding: 10px 18px;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+
+

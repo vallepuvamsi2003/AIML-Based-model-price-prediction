@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriPrice Forecast</title>
+    <link rel="icon" type="image/x-icon" href="static/download.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+   <div id="user-info" style="margin-bottom:12px;"></div>
+   <button id="show-login-btn" style="position:fixed;top:20px;right:30px;padding:9px 20px;background:#10B981;color:#fff;font-weight:700;border:none;border-radius:22px;z-index:10001;cursor:pointer;">Sign In</button>
+        <!-- LOGOUT Button: Initially hidden, top-left corner -->
+    <button id="logout-btn" style="position:fixed;top:20px;left:50px;padding:9px 20px;background:#ef4444;color:white;font-weight:700;border:none;border-radius:22px;z-index:10002;cursor:pointer; display:none;">Logout</button>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body class="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-100 relative">
+    <div class="fixed inset-0 opacity-20 z-0">
+        <div class="absolute top-20 left-20 w-32 h-32 bg-yellow-300 rounded-full animate-pulse-bg"></div>
+        <div class="absolute top-40 right-40 w-24 h-24 bg-green-300 rounded-full animate-bounce-bg" style="animation-delay: 1s;"></div>
+        <div class="absolute bottom-20 left-1/3 w-40 h-40 bg-blue-300 rounded-full animate-pulse-bg" style="animation-delay: 2s;"></div>
+    </div>
+    
+<!-- Login Modal -->
+<div id="login-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.25); z-index:10000; justify-content:center; align-items:center;">
+  <div style="background:white; max-width:340px; width:90%; padding:30px 24px 24px 24px; border-radius:14px; box-shadow:0 8px 24px #0002; position:relative;">
+    <button onclick="closeLoginModal()" style="position:absolute;top:13px;right:15px;font-size:20px;border:none;background:none;cursor:pointer;color:#888;">&times;</button>
+    <h2 style="margin-top:0;">Log in</h2>
+    <div style="font-size:15px; margin-bottom:20px;">
+      New user?
+      <a href="#" style="color:#10B981;" onclick="openRegisterModal();return false;">Register Now</a>
+    
+    </div>
+    <!-- Google Sign-In Button -->
+    <div id="g_id_onload"
+        data-client_id="345604079972-t13s92pqc5rqgum4t423ktjvn819t0qg.apps.googleusercontent.com"
+        data-context="signin"
+        data-ux_mode="popup"
+        data-callback="handleCredentialResponse"
+        data-auto_prompt="false"></div>
+    <div class="g_id_signin"
+        data-type="standard"
+        data-shape="pill"
+        data-theme="filled_blue"
+        data-text="sign_in_with"
+        data-size="large"></div>
+    <div style="margin: 15px 0 10px 0; text-align: center;">or</div>
+    <form id="login-form" autocomplete="off">
+      <div style="margin-bottom:10px;">
+        <input id="login-email" type="email" required placeholder="Username or Email"
+            style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:7px;font-size:15px;" />
+      </div>
+      <div style="margin-bottom:10px;">
+        <input id="login-password" type="password" required placeholder="Password"
+            style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:7px;font-size:15px;" />
+      </div>
+      <div style="display: flex; align-items: center; margin-bottom:8px;">
+        <input type="checkbox" id="remember-me" checked style="margin-right:6px;">
+        <label for="remember-me" style="font-size:14px;">Remember Me</label>
+        <a href="#" style="margin-left:auto;font-size:14px;color:#10B981;">Forgot password</a>
+    
+      </div>
+      <button type="submit"
+          style="width:100%; background:#10B981;color:white;padding:10px 0; font-weight:600;border:none;border-radius:7px; cursor:pointer;">Sign Up</button>
+    </form>
+  </div>
+</div>
+
+<!-- Register Modal -->
+<div id="register-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.28); z-index:10001; justify-content:center; align-items:center;">
+  <div style="background:white; max-width:340px; width:90%; padding:30px 24px 24px 24px; border-radius:14px; box-shadow:0 8px 24px #0002; position:relative;">
+    <button onclick="closeRegisterModal()" style="position:absolute;top:13px;right:15px;font-size:20px;border:none;background:none;cursor:pointer;color:#888;">&times;</button>
+    <h2 style="margin-top:0;">Register</h2>
+    <form id="register-form" autocomplete="off">
+      <div style="margin-bottom:10px;">
+        <input id="register-name" type="text" required placeholder="Full Name"
+            style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:7px;font-size:15px;" />
+     </div>
+      <div style="margin-bottom:10px;">
+        <input id="register-email" type="email" required placeholder="Email"
+            style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:7px;font-size:15px;" />
+      </div>
+      <div style="margin-bottom:10px;">
+        <input id="register-password" type="password" required placeholder="Password"
+            style="width:100%;padding:10px 12px;border:1.5px solid #ddd;border-radius:7px;font-size:15px;" />
+      </div>
+      <button type="submit"
+          style="width:100%; background:#10B981;color:white;padding:10px 0; font-weight:600;border:none;border-radius:7px; cursor:pointer;">Register</button>
+    </form>
+    <div style="margin-top:12px;font-size:15px;">
+      Already have an account? <a href="#" style="color:#10B981;" onclick="closeRegisterModal();openLoginModal();return false;">Login</a>
+    </div>
+  </div>
+</div>
+
+ 
+<!-- Load Google Identity Services SDK -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<div id="g_id_onload"
+     data-client_id="345604079972-t13s92pqc5rqgum4t423ktjvn819t0qg.apps.googleusercontent.com"
+     data-context="signin"
+     data-ux_mode="popup"
+     data-callback="handleCredentialResponse"
+     data-auto_prompt="false">
+</div>
+
+<script>
+  // Called by Google after a successful sign-in
+  function handleCredentialResponse(response) {
+    const token = response.credential;
+    console.log("Encoded JWT Token:", token);
+    const user = parseJwt(token);
+    alert("Hello, " + user.name + " (" + user.email + ")");
+    // Update UI or store token for session management
+    document.getElementById("user-info").innerHTML = `
+      Welcome, ${user.name} <img src="${user.picture}" alt="Profile" width="30" style="border-radius:50%;vertical-align:middle;">
+    `;
+    // Optionally save token in sessionStorage/localStorage
+    sessionStorage.setItem("id_token", token);
+  }
+
+  // Decode JWT token (basic decoding without verification)
+  function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => 
+      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+    return JSON.parse(jsonPayload);
+  }
+</script>
+
+    <div class="container mx-auto px-4 py-6 relative z-10">
+        <div class="text-center mb-12 animate-fade-in">
+            <div class="relative mb-8">
+                <img
+                    src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1200&h=400&fit=crop&crop=center"
+                    alt="Agricultural landscape"
+                    class="w-full h-80 object-cover rounded-3xl shadow-2xl border-4 border-white"
+                />
+                <div class="absolute inset-0 bg-gradient-to-r from-emerald-900/80 via-teal-900/70 to-cyan-900/80 rounded-3xl flex items-center justify-center">
+                    <div class="text-center text-white">
+                        <div class="flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-12 w-12 mr-4 text-yellow-300 animate-pulse"><path d="M3 3L21 21"/><path d="M16.7 16.7l-3.4 3.4c-.7.7-1.7 1-2.7 1s-2-.3-2.7-1L3 16.7c-1.1-1.1-1.1-2.9 0-4l1.4-1.4c.7-.7 1.7-1 2.7-1s2 .3 2.7 1l3.4 3.4c1.1 1.1 1.1 2.9 0 4Z"/><path d="M12 5.5l-3.4-3.4c-.7-.7-1.7-1-2.7-1s-2 .3-2.7 1L3 5.5"/><path d="M21 7.3l-1.4-1.4c-.7-.7-1.7-1-2.7-1s-2 .3-2.7 1L12 7.3"/></svg>
+                            <h1 class="text-6xl font-bold drop-shadow-lg bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                                AgriPrice Forecast
+                            </h1>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-12 w-12 ml-4 text-yellow-300 animate-pulse"><path d="M3 3L21 21"/><path d="M16.7 16.7l-3.4 3.4c-.7.7-1.7 1-2.7 1s-2-.3-2.7-1L3 16.7c-1.1-1.1-1.1-2.9 0-4l1.4-1.4c.7-.7 1.7-1 2.7-1s2 .3 2.7 1l3.4 3.4c1.1 1.1 1.1 2.9 0 4Z"/><path d="M12 5.5l-3.4-3.4c-.7-.7-1.7-1-2.7-1s-2 .3-2.7 1L3 5.5"/><path d="M21 7.3l-1.4-1.4c-.7-.7-1.7-1-2.7-1s-2 .3-2.7 1L12 7.3"/></svg>
+                        </div>
+                        <p class="text-2xl max-w-4xl mx-auto drop-shadow-md font-medium">
+                            AI-powered price forecasting for agricultural commodities
+                        </p>
+                        <div class="mt-6 flex justify-center space-x-4">
+                            <div class="px-4 py-2 bg-white/20 rounded-full text-sm font-semibold backdrop-blur-sm">
+                                Real-time Analytics
+                            </div>
+                            <div class="px-4 py-2 bg-white/20 rounded-full text-sm font-semibold backdrop-blur-sm">
+                                AI Predictions
+                            </div>
+                            <div class="px-4 py-2 bg-white/20 rounded-full text-sm font-semibold backdrop-blur-sm">
+                                Market Insights
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex justify-center space-x-4 text-lg font-medium text-gray-600 mb-8 animate-fade-in">
+            <button id="nav-dashboard" class="nav-btn">
+                <span>Dashboard</span>
+            </button>
+            <button id="nav-markets" class="nav-btn">
+                <span>Markets</span>
+            </button>
+            <button id="nav-analysis" class="nav-btn">
+                <span>Analysis</span>
+            </button>
+            <button id="nav-news" class="nav-btn">
+                <span>News</span>
+            </button>
+        </nav>
+
+        <main id="main-content" class="min-h-[600px]"></main>
+
+        <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+            <div class="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full text-center border border-red-300 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="error-modal-content">
+                <div class="flex items-center justify-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-10 w-10 text-red-500">
+                        <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-red-700 mb-4">Error</h3>
+                <p id="error-message" class="text-gray-700 mb-6"></p>
+                <button id="close-error-modal" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 btn-hover-effect">
+                    Close
+                </button>
+            </div>
+        </div>
+
+        <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    </div>
+
+    <footer class="bg-gray-900 text-gray-300 py-12 mt-16 rounded-t-3xl shadow-inner-xl animate-fade-in">
+        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="md:col-span-1">
+                <div class="flex items-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8 mr-2 text-green-400">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                    </svg>
+                    <h3 class="text-2xl font-bold text-white">AgriPrice Forecast</h3>
+                </div>
+                <p class="text-gray-400 leading-relaxed">
+                    Empowering farmers with AI-powered price forecasting and market intelligence for smarter agricultural decisions.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="text-xl font-semibold text-white mb-4">Platform</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" id="footer-link-dashboard" class="hover:text-green-400 transition duration-200">Dashboard</a></li>
+                    <li><a href="#" id="footer-link-markets" class="hover:text-green-400 transition duration-200">Markets</a></li>
+                    <li><a href="#" id="footer-link-analysis" class="hover:text-green-400 transition duration-200">Analysis</a></li>
+                    <li><a href="#" id="footer-link-news" class="hover:text-green-400 transition duration-200">News</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-xl font-semibold text-white mb-4">Resources</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-green-400 transition duration-200">Documentation</a></li>
+                    <li><a href="#" class="hover:text-green-400 transition duration-200">Tutorials</a></li>
+                    <li><a href="#" class="hover:text-green-400 transition duration-200">Case Studies</a></li>
+                    <li><a href="#" class="hover:text-green-400 transition duration-200">Support</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-xl font-semibold text-white mb-4">Connect</h4>
+                <div class="flex space-x-4 mb-4">
+                    <a href="#" class="text-gray-400 hover:text-green-400 transition duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-green-400 transition duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-green-400 transition duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-green-400 transition duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mail"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </a>
+                </div>
+                <p class="text-gray-400 text-sm">
+                    Stay updated with the latest agricultural insights and AI innovations.
+                </p>
+            </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-500 text-sm">
+            © 2024 AgriPrice Forecast. All rights reserved. Empowering farmers with intelligent technology.
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+<button id="open-ai-assistant-btn" style="position: fixed; bottom: 32px; right: 36px; z-index: 10050; padding: 15px 42px 15px 24px; border-radius: 50px; background: #10B981; color: #fff; font-size: 17px; font-weight: bold; box-shadow: 0 3px 14px #055b4a22; border: none; cursor: pointer;">
+        <span style="margin-right:10px">&#129299;</span> Ask AI Assistant
+    </button>
+
+    <div id="ai-assistant-modal" style="display: none; position: fixed; bottom: 24px; right: 24px; z-index: 9999;">
+        <div style="width: 340px;">
+            <div id="ai-assistant-header" style="background:#10B981; color:white; padding:12px; border-radius:12px 12px 0 0; position: relative;">
+                <b>Ask AgriPrice Assistant</b>
+                <button id="close-assistant-btn" style="position: absolute; top: 8px; right: 8px; background: none; border: none; color: white; font-size: 20px; cursor: pointer;">&times;</button>
+            </div>
+            <div id="ai-chat-log" style="background:white; height:200px; overflow-y:auto; padding:12px; border:1px solid #eee; border-top:none;"></div>
+            <form id="ai-chat-form" style="display:flex; border:1px solid #10B981; border-top:none; border-radius:0 0 12px 12px;">
+                <input id="ai-chat-input" type="text" placeholder="Ask me anything…" style="flex:1; border:none; padding:10px;" autocomplete="off">
+                <button id="mic-btn" type="button" title="Speak" style="background:rgb(244, 243, 243); border:none; padding:0 12px; margin-right:4px; cursor:pointer; outline:none; display:flex; align-items:center; transition:box-shadow 0.2s;">
+                    <svg id="mic-icon" width="26" height="26" viewBox="0 0 24 24" style="display:block;" fill="none" stroke="#10B981" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10" fill="10B981"/>
+                        <rect x="9" y="3" width="6" height="12" rx="3" fill="rgb(15, 15, 15)" stroke="none"/>
+                        <rect x="11" y="16" width="2" height="3" rx="1" fill="rgb(15, 15, 15)" stroke="none"/>
+                        <path d="M8 12v1a4 4 0 0 0 8 0v-1" stroke="rgb(15, 15, 15)" stroke-width="2"/>
+                    </svg>
+                </button>
+                <button type="submit" style="background:#10B981; color:white; border:none; padding:0 16px;">Send</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
